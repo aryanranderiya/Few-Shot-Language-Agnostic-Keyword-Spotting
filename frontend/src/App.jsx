@@ -1,21 +1,24 @@
-import { useState } from 'react'
 import './App.css'
-import { Button } from "./components/ui/button"
+import FileUploaderComponent from "./components/FileUploader"
+import Navbar from "./components/Navbar"
+import Footer from "./components/Footer"
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <main className='text-foreground min-w-screen min-h-screen flex justify-center items-center flex-col'>
-
-      <h1>Hello World</h1>
-      <div className="card">
-        <Button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </Button>
-      </div>
-    </main >
+    <>
+      <Navbar />
+      <Footer />
+      <main className='text-foreground min-w-screen w-screen min-h-screen flex justify-center items-center flex-col gap-6 p-[1em]'>
+        <div className='flex flex-col gap-1 items-center'>
+          <span className='font-bold sm:text-[1.6rem] text-[1.4rem] text-center'>
+            Few Shot Language Agnostic Key Word Spotting system for audio files.
+          </span>
+          <span className='text-center'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente, autem.</span>
+        </div>
+        <div className='max-w-[400px]'>
+          <FileUploaderComponent />
+        </div>
+      </main >
+    </>
   )
 }
-
-export default App
