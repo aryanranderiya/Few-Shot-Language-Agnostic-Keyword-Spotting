@@ -1,26 +1,18 @@
-from typing import Union, Annotated
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from functions.convert import to_audio
-import os
+from config import config
+from fastapi import FastAPI
+from routes.upload_file import router
+
 
 app = FastAPI()
-
 
 @app.get("/")
 def ping():
     return {"Hello": "World"}
+ 
+app.include_router(router, prefix="/api/v1")
 
+# start the FastAPI application
+if __name__ == "__main__":
+    import uvicorn
 
-@app.post("/convert_audio")
-async def convert_audio(file: UploadFile):
-    file_location = f"{file.filename}"\
-
-    with open(file_location, "wb") as f:
-        f.write(await file.read())
-
-    result = await to_audio(file_location)
-
-    if "error" in result:
-        raise HTTPException(status_code=500, detail=result["error"])
-
-    return result
+    uvicorn.run(app, port=config.port)
