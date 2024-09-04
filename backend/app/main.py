@@ -2,8 +2,13 @@ from config import config
 from fastapi import FastAPI
 from routes.upload_file import router
 
+
 app = FastAPI()
 
+@app.get("/")
+def ping():
+    return {"Hello": "World"}
+ 
 app.include_router(router, prefix="/api/v1")
 
 # start the FastAPI application
