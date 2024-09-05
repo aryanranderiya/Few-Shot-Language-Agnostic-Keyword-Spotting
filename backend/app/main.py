@@ -1,9 +1,8 @@
-import time
-
 from config import config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.upload_file import router
+import logging
 
 app = FastAPI()
 app.add_middleware(
@@ -14,6 +13,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", 
+)
+
+logger = logging.getLogger(__name__)
 
 
 @app.get("/")

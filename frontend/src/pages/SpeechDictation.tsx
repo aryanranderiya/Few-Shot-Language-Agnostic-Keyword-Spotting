@@ -1,19 +1,27 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button.js";
 import { Mic, Send } from "lucide-react";
 import * as React from "react";
 import { useCallback, useRef, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../hooks/use-toast.js";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function SpeechDictation() {
   const [isRecording, setIsRecording] = useState(false);
   const [audioData, setAudioData] = useState<Uint8Array | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioFile, setAudioFile] = useState(null);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const startRecording = useCallback(async () => {
     try {
@@ -25,7 +33,8 @@ export default function SpeechDictation() {
       };
 
       mediaRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" }); // Changed to webm
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
+
         const reader = new FileReader();
         reader.onloadend = () => {
           const arrayBuffer = reader.result as ArrayBuffer;
@@ -33,6 +42,12 @@ export default function SpeechDictation() {
         };
         reader.readAsArrayBuffer(audioBlob);
         setAudioUrl(URL.createObjectURL(audioBlob));
+
+        const audioFile = new File([audioBlob], "audioRecording.webm", {
+          type: "audio/webm",
+        });
+
+        setAudioFile(audioFile);
         audioChunks.current = [];
       };
 
@@ -50,13 +65,36 @@ export default function SpeechDictation() {
     }
   }, []);
 
-  const sendAudioToAPI = useCallback(() => {
-    if (audioData) {
-      // Here you would typically send the audioData to your API using Axios
-      console.log("Sending audio data to API:", audioData);
-      // Reset audio data after sending
-      setAudioData(null);
-      setAudioUrl(null);
+  const sendAudioToAPI = useCallback(async () => {
+    if (audioFile) {
+      const formData = new FormData();
+      formData.append("file", audioFile);
+
+      try {
+        const response = await axios.post(
+          `${backendUrl}/api/v1/convert-to-audio`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        setAudioData(null);
+        setAudioUrl(null);
+
+        navigate("/output", {
+          state: {
+            audio: response.data.audio,
+            video: null,
+            keywords: response.data.keywords,
+            summary: response.data.summary,
+          },
+        });
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
     }
   }, [audioData]);
 
