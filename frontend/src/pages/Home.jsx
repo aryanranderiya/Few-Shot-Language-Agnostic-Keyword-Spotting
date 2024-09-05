@@ -5,10 +5,11 @@ import { Button } from "../components/ui/button";
 import { LoadingSpinner } from "../components/icons"
 import axios from "axios";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 export default function Home() {
     const [files, setFiles] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
-
 
     const handleSubmit = async () => {
         if (files.length === 0) return;
@@ -17,15 +18,19 @@ export default function Home() {
 
         const formData = new FormData();
         files.forEach((file) => {
-            formData.append("files", file);
+            formData.append("file", file);
         });
 
         try {
-            const response = await axios.post("/api/upload", formData, {
+
+            const response = await axios.post(`${backendUrl}/api/v1/convert-to-audio`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                },
-            });
+                }
+            }
+            );
+
+            setFiles([])
             console.log("Files uploaded successfully:", response.data);
         } catch (error) {
             console.error("Error uploading files:", error);

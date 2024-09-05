@@ -13,11 +13,14 @@ import { FileSvgDraw } from "../components/icons"
 
 const FileUploaderComponent = ({ files, setFiles }) => {
   const dropZoneConfig = {
-    maxFiles: 5,
+    maxFiles: 1,
     maxSize: 1024 * 1024 * 100,
     multiple: false,
+    accept: {
+      "audio/*": [".mp3", ".ogg", ".wav"],
+      "video/*": [".mp4", ".mov"]
+    },
   };
-
   return (
     <FileUploader
       value={files}
@@ -30,7 +33,7 @@ const FileUploaderComponent = ({ files, setFiles }) => {
           <FileSvgDraw />
         </div>
       </FileInput>
-      <FileUploaderContent className="max-w-[500px] min-w-[290px]">
+      <FileUploaderContent >
         {files &&
           files.length > 0 &&
           files.map((file, i) => (
