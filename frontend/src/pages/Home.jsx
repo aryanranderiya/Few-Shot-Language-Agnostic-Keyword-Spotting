@@ -4,12 +4,14 @@ import FileUploaderComponent from "../components/FileUploader";
 import { Button } from "../components/ui/button";
 import { LoadingSpinner } from "../components/icons"
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Home() {
     const [files, setFiles] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async () => {
         if (files.length === 0) return;
@@ -17,21 +19,31 @@ export default function Home() {
         setLoading(true);
 
         const formData = new FormData();
-        files.forEach((file) => {
-            formData.append("file", file);
-        });
+        formData.append("file", files[0]);
 
         try {
 
             const response = await axios.post(`${backendUrl}/api/v1/convert-to-audio`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                }
+                },
             }
             );
 
+            console.log(response.data);
             setFiles([])
-            console.log("Files uploaded successfully:", response.data);
+            const isVideo = (files[0].type).startsWith('video/');
+            const videoURL = isVideo ? URL.createObjectURL(files[0]) : null;
+
+            navigate("/output", {
+                state: {
+                    audio: response.data.audio,
+                    video: videoURL,
+                    keywords: response.data.keywords,
+                    summary: response.data.summary,
+                }
+            });
+
         } catch (error) {
             console.error("Error uploading files:", error);
         } finally {

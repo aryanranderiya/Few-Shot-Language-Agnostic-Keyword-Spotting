@@ -15,14 +15,28 @@ s3 = boto3.client(
     region_name=aws_region,
 )
 
+# def upload_file(file, filename, original_filename: str):
+#     name = original_filename.split(".")[0]
+#     object_name = original_filename.replace(name, filename)
 
-def upload_file(file, filename, original_filename: str):
+#     s3.upload_fileobj(file, aws_bucket, f"audio/{object_name}")
+
+#     presigned_url = s3.generate_presigned_url(
+#         "get_object",
+#         Params={"Bucket": aws_bucket, "Key": f"audio/{object_name}"},
+#         ExpiresIn=3600,
+#     )
+
+#     return presigned_url
+
+
+def upload_file(file_content: bytes, filename: str, original_filename: str) -> str:
     name = original_filename.split(".")[0]
     object_name = original_filename.replace(name, filename)
 
-    s3.upload_fileobj(file, aws_bucket, f"audio/{object_name}")
+    s3.put_object(Bucket=aws_bucket,
+                  Key=f"audio/{object_name}", Body=file_content)
 
-    # Generate a presigned URL for the uploaded object
     presigned_url = s3.generate_presigned_url(
         "get_object",
         Params={"Bucket": aws_bucket, "Key": f"audio/{object_name}"},
