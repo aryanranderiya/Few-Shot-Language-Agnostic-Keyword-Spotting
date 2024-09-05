@@ -14,7 +14,7 @@ export default function OutputPage() {
     }, [state, navigate]);
 
     return (
-        <main className="text-foreground min-w-screen w-screen min-h-screen flex justify-center items-center flex-col gap-2 p-[1em] overflow-scroll py-[90px]">
+        <main className="text-foreground min-w-screen w-screen min-h-screen flex justify-center items-center flex-col gap-2 p-[1em] overflow-scroll py-[90px] bg-gray-100">
             <div className="flex flex-col gap-3 items-center">
                 <span className="font-bold sm:text-4xl text-3xl text-center">
                     Output
@@ -24,7 +24,7 @@ export default function OutputPage() {
                 </span>
 
                 <div className="flex gap-4 flex-col pt-5 items-center">
-                    {!!state.video &&
+                    {!!state?.video &&
                         <video
                             width="360"
                             height="360"
@@ -37,7 +37,7 @@ export default function OutputPage() {
                         </video>
                     }
 
-                    {!!state.audio &&
+                    {!!state?.audio &&
                         <audio
                             controls
                             onCanPlay={() => setIsAudioLoaded(true)}
@@ -48,7 +48,7 @@ export default function OutputPage() {
                         </audio>
                     }
 
-                    {!!state.keywords &&
+                    {!!state?.keywords &&
                         <div className="flex gap-4 justify-between flex-wrap flex-col w-[440px] outline outline-1 outline-gray-300 p-6 rounded-xl">
                             <span className="font-semibold text-2xl">Detected Keywords:</span>
                             <span className="flex flex-wrap max-w-[400px] gap-1 ">
@@ -61,7 +61,7 @@ export default function OutputPage() {
                         </div>
                     }
 
-                    {!!state.summary &&
+                    {!!state?.summary &&
                         <div className="flex gap-4 justify-between flex-wrap flex-col w-[440px] outline outline-1 outline-gray-300 p-6 rounded-xl">
                             <span className="font-semibold text-2xl">Summary</span>
                             <span className="flex flex-wrap max-w-[400px] gap-1 ">

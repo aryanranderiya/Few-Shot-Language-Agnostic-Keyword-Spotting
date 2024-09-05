@@ -51,7 +51,7 @@ export default function Home() {
     };
 
     return (
-        <main className="text-foreground min-w-screen w-screen min-h-screen flex justify-center items-center flex-col gap-2 p-[1em]">
+        <main className="text-foreground min-w-screen w-screen min-h-screen flex justify-center items-center flex-col gap-3 p-[1em]  bg-gray-100">
             <div className="flex flex-col gap-1 items-center">
                 <span className="font-bold sm:text-[1.6rem] text-[1.4rem] text-center">
                     Few Shot Language Agnostic Key Word Spotting system for audio files.

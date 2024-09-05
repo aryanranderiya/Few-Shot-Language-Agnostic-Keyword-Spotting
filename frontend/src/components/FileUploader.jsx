@@ -26,9 +26,9 @@ const FileUploaderComponent = ({ files, setFiles }) => {
       value={files}
       onValueChange={setFiles}
       dropzoneOptions={dropZoneConfig}
-      className="relative bg-background rounded-lg p-2 items-center flex flex-col justify-center cursor-default gap-4"
+      className="relative rounded-lg p-2 items-center flex flex-col justify-center cursor-default gap-4"
     >
-      <FileInput className="outline-dashed outline-1 outline-gray-400 max-w-[400px]">
+      <FileInput className="outline-dashed outline-1 outline-gray-400 max-w-[400px] bg-white shadow-xl">
         <div className="flex items-center justify-center flex-col p-10 w-full max-w-[400px] ">
           <FileSvgDraw />
         </div>

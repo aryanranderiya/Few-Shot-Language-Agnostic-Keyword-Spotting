@@ -11,26 +11,19 @@ export default function Navbar() {
         >
           SIH 2024
         </Link>
-        <div className="flex gap-2">
+        <div className="flex gap-5">
           <Link
-            to="/"
+            to="/all"
             className="text-black  hover:text-gray-500 transition-all"
           >
-            Item1
+            All Data
           </Link>
 
           <Link
-            to="/"
+            to="/dictate"
             className="text-black  hover:text-gray-500 transition-all"
           >
-            Item2
-          </Link>
-
-          <Link
-            to="/"
-            className="text-black  hover:text-gray-500 transition-all"
-          >
-            Item3
+            Speech Dictation
           </Link>
         </div>
       </div>
