@@ -16,5 +16,8 @@ def is_video_file(file_name):
 
 
 def remove_file(file_path):
+    if not file_path:
+        return
+
     if os.path.exists(file_path):
         os.remove(file_path)
