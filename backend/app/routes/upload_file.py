@@ -2,8 +2,7 @@ import os
 from typing import Optional
 
 import utils.common as utils
-from fastapi import APIRouter, UploadFile, HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, UploadFile
 from functions import convert
 from services.s3 import upload_file
 
@@ -14,36 +13,23 @@ if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR)
 
 
-@router.post("/convert-to-audio", response_class=FileResponse)
-async def convert_to_audio(file: UploadFile):
-    file_path = os.path.join(TEMP_DIR, file.filename)
+async def process_file(file: UploadFile, file_path):
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
 
-    try:
-        # Save the uploaded file to the 'temp' directory
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
+    if utils.is_video_file(file.filename):
+        audio_file = await convert.convert_to_audio(file_path)
 
-        if utils.is_video_file(file.filename):
-            audio_file = await convert.convert_to_audio(file_path)
-            return FileResponse(audio_file, filename=os.path.basename(audio_file))
+        f = open(audio_file, "rb")
 
-        elif utils.is_audio_file(file.filename):
-            return FileResponse(file_path, filename=file.filename)
+        audio = UploadFile(filename=os.path.basename(audio_file), file=f)
 
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported file type"
-            )
+        return audio
 
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+    if not utils.is_audio_file(file.filename):
+        return None
 
-    finally:
-        # Clean up the uploaded file
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    return file
 
 
 @router.post("/upload-audio", tags=["upload"])
@@ -67,7 +53,8 @@ async def upload_audio(file: Optional[UploadFile]):
     except Exception as e:
         return {"error": str(e)}
     finally:
-        os.remove(file_path)
-        if file:
+        if file_path:
+            utils.remove_file(file_path)
+        if file and file.file and not file.file.closed:
             file.file.close()
-            os.remove(file.file.name)
+            utils.remove_file(file.file.name)
