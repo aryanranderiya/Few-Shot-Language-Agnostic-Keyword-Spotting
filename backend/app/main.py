@@ -1,8 +1,9 @@
+import time
+
 from config import config
 from fastapi import FastAPI
-from routes.upload_file import router
 from fastapi.middleware.cors import CORSMiddleware
-import time
+from routes.upload_file import router
 
 app = FastAPI()
 app.add_middleware(
