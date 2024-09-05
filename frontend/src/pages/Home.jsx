@@ -30,7 +30,6 @@ export default function Home() {
             }
             );
 
-            console.log(response.data);
             setFiles([])
             const isVideo = (files[0].type).startsWith('video/');
             const videoURL = isVideo ? URL.createObjectURL(files[0]) : null;

@@ -6,11 +6,12 @@ export default function OutputPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { state } = location;
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+    const [isAudioLoaded, setIsAudioLoaded] = useState(false);
 
     useEffect(() => {
         if (!state) navigate("/");
-    }, [location, state]);
+    }, [state, navigate]);
 
     return (
         <main className="text-foreground min-w-screen w-screen min-h-screen flex justify-center items-center flex-col gap-2 p-[1em] overflow-scroll py-[90px]">
@@ -28,8 +29,8 @@ export default function OutputPage() {
                             width="360"
                             height="360"
                             controls
-                            onLoadedData={() => setIsLoaded(true)}
-                            className={`${isLoaded ? "visible" : "hidden"}`}
+                            onCanPlay={() => setIsVideoLoaded(true)}
+                            className={`${isVideoLoaded ? "visible" : "hidden"}`}
                         >
                             <source src={state?.video} type="video/mp4" />
                             Your browser does not support the video tag.
@@ -39,8 +40,8 @@ export default function OutputPage() {
                     {!!state.audio &&
                         <audio
                             controls
-                            onLoadedData={() => setIsLoaded(true)}
-                            className={`${isLoaded ? "visible" : "hidden"} w-[500px]`}
+                            onCanPlay={() => setIsAudioLoaded(true)}
+                            className={`${isAudioLoaded ? "visible" : "hidden"} w-[500px]`}
                         >
                             <source src={state?.audio} type="audio/mp3" />
                             Your browser does not support the audio element.
