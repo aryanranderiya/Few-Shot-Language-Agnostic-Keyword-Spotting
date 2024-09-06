@@ -3,8 +3,8 @@ import logging
 from config import config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models import audio
-from routes.upload_file import router
+from routes.get_audio import router as router_get_audio
+from routes.upload_file import router as router_upload
 
 app = FastAPI()
 app.add_middleware(
@@ -29,7 +29,8 @@ def ping():
     return {"Hello": "World"}
 
 
-app.include_router(router, prefix="/api/v1")
+app.include_router(router_upload, prefix="/api/v1")
+app.include_router(router_get_audio, prefix="/api/v1")
 
 # start the FastAPI application
 if __name__ == "__main__":

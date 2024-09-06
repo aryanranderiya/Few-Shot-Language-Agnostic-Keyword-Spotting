@@ -57,12 +57,8 @@ async def convert_to_audio(file: UploadFile, background_tasks: BackgroundTasks):
                     detail="Could not upload to AWS",
                 )
 
-            audio.insert_audio(
-                audio.Audio(
-                    url=audio_file_url,
-                    keywords=["lorem", "ipsum"],
-                    summary="This is a summary",
-                )
+            background_tasks.add_task(
+                save_to_db, audio_file_url, ["lorem", "ipsum"], "This is a summary"
             )
 
             return ConvertToAudioResponse(
@@ -79,6 +75,10 @@ async def convert_to_audio(file: UploadFile, background_tasks: BackgroundTasks):
         background_tasks.add_task(remove_file, file_path)
         if audio_file_path and os.path.exists(audio_file_path):
             background_tasks.add_task(remove_file, audio_file_path)
+
+
+def save_to_db(url: str, keywords: List[str], summary: str):
+    audio.insert_audio(audio.Audio(url=url, keywords=keywords, summary=summary))
 
 
 def remove_file(path: str):
