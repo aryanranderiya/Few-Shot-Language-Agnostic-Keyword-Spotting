@@ -57,13 +57,11 @@ export default function AudioTable() {
       }
       setPlaying(null);
     } else {
-      // If a different audio is selected, play the new one
       if (audioRef.current) {
-        audioRef.current.pause(); // Stop any current playing audio
-        audioRef.current.currentTime = 0; // Reset the previous audio
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
       }
 
-      // Create a new audio element and play it
       const audio = new Audio(url);
       audioRef.current = audio;
 
@@ -87,44 +85,47 @@ export default function AudioTable() {
   if (error) return <div>{error}</div>;
 
   return (
-    <main className="text-foreground min-w-screen w-screen min-h-screen flex justify-start flex-col gap-2 p-[7em] bg-gray-100">
+    <main className="text-foreground min-w-screen w-screen min-h-screen flex justify-start flex-col gap-2 sm:p-[7em] py-[85px] px-5 bg-gray-100">
       <span className="font-semibold text-4xl">All Data</span>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Play</TableHead>
-            <TableHead>Keywords</TableHead>
-            <TableHead>Summary</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {audioFiles.map((file, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => togglePlay(file._id, file.url)}
-                >
-                  {playing === file._id ? (
-                    <PauseIcon className="h-4 w-4" />
-                  ) : (
-                    <PlayIcon className="h-4 w-4" />
-                  )}
-                </Button>
-              </TableCell>
-              <TableCell>
-                {file.keywords.map((keyword, index) => (
-                  <Badge key={index} className="mr-1 rounded-full">
-                    {keyword}
-                  </Badge>
-                ))}
-              </TableCell>
-              <TableCell>{file.summary}</TableCell>
+      <span className="font-semibold text-md">Built using AWS</span>
+      <div className="bg-white p-5 rounded-xl mt-3">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Play</TableHead>
+              <TableHead>Keywords</TableHead>
+              <TableHead>Summary</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {audioFiles.map((file, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => togglePlay(file._id, file.url)}
+                  >
+                    {playing === file._id ? (
+                      <PauseIcon className="h-4 w-4" />
+                    ) : (
+                      <PlayIcon className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TableCell>
+                <TableCell className="flex flex-wrap gap-1">
+                  {file.keywords.map((keyword, index) => (
+                    <Badge key={index} className="rounded-full">
+                      {keyword}
+                    </Badge>
+                  ))}
+                </TableCell>
+                <TableCell>{file.summary}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </main>
   );
 }

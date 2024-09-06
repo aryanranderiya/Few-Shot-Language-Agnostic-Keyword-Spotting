@@ -57,8 +57,7 @@ export default function Home() {
                     Few Shot Language Agnostic Key Word Spotting system for audio files.
                 </span>
                 <span className="text-center">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente,
-                    autem.
+                    Problem Statement ID: <b>1680</b>
                 </span>
             </div>
             <FileUploaderComponent files={files} setFiles={setFiles} />
