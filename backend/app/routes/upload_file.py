@@ -1,4 +1,5 @@
 import os
+import time
 from typing import List, Optional
 
 import aiofiles
@@ -48,8 +49,15 @@ async def convert_to_audio(file: UploadFile, background_tasks: BackgroundTasks):
         if audio_file_path:
             async with aiofiles.open(audio_file_path, "rb") as f:
                 file_content = await f.read()
+
+            start_time = time.time()
             audio_file_url = upload_audio(
-                file_content, os.path.basename(audio_file_path))
+                file_content, os.path.basename(audio_file_path)
+            )
+            end_time = time.time()
+
+            time_required = end_time - start_time
+            print(f"Time required: {time_required} seconds")
 
             if not audio_file_url:
                 raise HTTPException(
