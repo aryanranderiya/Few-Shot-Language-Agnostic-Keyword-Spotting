@@ -13,60 +13,73 @@ import { PlayIcon, PauseIcon } from "lucide-react";
 import * as React from "react";
 
 interface AudioFile {
-  id: string;
-  name: string;
+  _id: string;
+  summary: string;
   url: string;
   keywords: string[];
 }
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function AudioTable() {
   const [audioFiles, setAudioFiles] = useState<AudioFile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [playing, setPlaying] = useState<string | null>(null);
+  const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    //     const fetchAudioFiles = async () => {
-    //       try {
-    //         // Replace '/api/audio-files' with your actual API endpoint
-    //         const response = await fetch("/api/audio-files");
-    //         if (!response.ok) {
-    //           throw new Error("Failed to fetch audio files");
-    //         }
-    //         const data = await response.json();
-    //         setAudioFiles(data);
-    //         setIsLoading(false);
-    //       } catch (err) {
-    //         setError("Error fetching audio files. Please try again later.");
-    //         setIsLoading(false);
-    //       }
-    //     };
+    const fetchAudioFiles = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/v1/audios`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch audio files");
+        }
+        const data = await response.json();
+        setAudioFiles(data);
+        setIsLoading(false);
+      } catch (err) {
+        setError("Error fetching audio files. Please try again later.");
+        setIsLoading(false);
+      }
+    };
 
-    //     fetchAudioFiles();
-    setAudioFiles([
-      {
-        id: "1",
-        name: "Audio File 1",
-        url: "/audio/file1.mp3",
-        keywords: ["music", "rock", "guitar"],
-      },
-      {
-        id: "2",
-        name: "Audio File 2",
-        url: "/audio/file2.mp3",
-        keywords: ["podcast", "technology", "AI"],
-      },
-    ]);
+    fetchAudioFiles();
     setIsLoading(false);
   }, []);
 
   const togglePlay = (id: string, url: string) => {
     if (playing === id) {
+      // If the same audio is playing, pause and reset
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       setPlaying(null);
     } else {
-      setPlaying(id);
-      // In a real implementation, you would play the audio file here
-      console.log(`Playing audio: ${url}`);
+      // If a different audio is selected, play the new one
+      if (audioRef.current) {
+        audioRef.current.pause(); // Stop any current playing audio
+        audioRef.current.currentTime = 0; // Reset the previous audio
+      }
+
+      // Create a new audio element and play it
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      audio
+        .play()
+        .then(() => {
+          console.log(`Playing audio: ${url}`);
+          setPlaying(id);
+        })
+        .catch((error) => {
+          console.error("Error playing audio:", error);
+        });
+
+      audio.onended = () => {
+        setPlaying(null);
+      };
     }
   };
 
@@ -80,34 +93,34 @@ export default function AudioTable() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Play</TableHead>
-            <TableHead>Name</TableHead>
             <TableHead>Keywords</TableHead>
+            <TableHead>Summary</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {audioFiles.map((file) => (
-            <TableRow key={file.id}>
+          {audioFiles.map((file, index) => (
+            <TableRow key={index}>
               <TableCell>
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => togglePlay(file.id, file.url)}
+                  onClick={() => togglePlay(file._id, file.url)}
                 >
-                  {playing === file.id ? (
+                  {playing === file._id ? (
                     <PauseIcon className="h-4 w-4" />
                   ) : (
                     <PlayIcon className="h-4 w-4" />
                   )}
                 </Button>
               </TableCell>
-              <TableCell>{file.name}</TableCell>
               <TableCell>
                 {file.keywords.map((keyword, index) => (
-                  <Badge key={index} variant="secondary" className="mr-1">
+                  <Badge key={index} className="mr-1 rounded-full">
                     {keyword}
                   </Badge>
                 ))}
               </TableCell>
+              <TableCell>{file.summary}</TableCell>
             </TableRow>
           ))}
         </TableBody>

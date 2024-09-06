@@ -17,6 +17,7 @@ export default function SpeechDictation() {
   const [audioData, setAudioData] = useState<Uint8Array | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioFile, setAudioFile] = useState(null);
+  const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -48,6 +49,7 @@ export default function SpeechDictation() {
         });
 
         setAudioFile(audioFile);
+        setAudioBlob(audioBlob);
         audioChunks.current = [];
       };
 
@@ -68,7 +70,7 @@ export default function SpeechDictation() {
   const sendAudioToAPI = useCallback(async () => {
     if (audioFile) {
       const formData = new FormData();
-      formData.append("file", audioFile);
+      formData.append("file", audioBlob, "recordedAudio.mp3");
 
       try {
         const response = await axios.post(
