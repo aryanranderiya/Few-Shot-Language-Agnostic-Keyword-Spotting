@@ -1,8 +1,10 @@
+import logging
+
 from config import config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from models import audio
 from routes.upload_file import router
-import logging
 
 app = FastAPI()
 app.add_middleware(

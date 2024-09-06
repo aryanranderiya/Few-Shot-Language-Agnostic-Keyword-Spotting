@@ -1,12 +1,13 @@
-import aiofiles
-from pydantic import BaseModel
-from typing import Optional, List
-import base64
 import os
+from typing import List, Optional
+
+import aiofiles
 import utils.common as utils
-from fastapi import APIRouter, UploadFile, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 from functions import convert
+from models import audio
+from pydantic import BaseModel
 from services.s3 import upload_file
 
 router = APIRouter()
@@ -55,6 +56,14 @@ async def convert_to_audio(file: UploadFile, background_tasks: BackgroundTasks):
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Could not upload to AWS",
                 )
+
+            audio.insert_audio(
+                audio.Audio(
+                    url=audio_file_url,
+                    keywords=["lorem", "ipsum"],
+                    summary="This is a summary",
+                )
+            )
 
             return ConvertToAudioResponse(
                 audio=audio_file_url,
